@@ -103,6 +103,7 @@ public:
 
 	void create(rect bounds, const std::vector<uint32_t> weight)
 	{
+		xpos.clear();
 		xpos.reserve(weight.size() + 1);
 		double sum = 0;
 		x1 = bounds.x1;
@@ -125,6 +126,7 @@ public:
 
 	void create_fixed(rect bounds, const std::vector<int> extent)
 	{
+		xpos.clear();
 		xpos.reserve(extent.size() + 1);
 		double x = 0;
 		x1 = bounds.x1;
@@ -171,6 +173,7 @@ public:
 
 	void create(rect bounds, const std::vector<uint32_t> weight)
 	{
+		ypos.clear();
 		ypos.reserve(weight.size() + 1);
 		double sum = 0;
 		double y = 0;
@@ -193,6 +196,7 @@ public:
 
 	void create_fixed(rect bounds, const std::vector<int> extent)
 	{
+		ypos.clear();
 		ypos.reserve(extent.size() + 1);
 		double y = 0; 
 		y1 = bounds.y1;
