@@ -12,5 +12,5 @@ Currently, it needs a revision and it's not recommended for production.
 DEPENDENCIES:
 -------------
 
-libcairo
+cairomm
 
