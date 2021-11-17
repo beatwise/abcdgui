@@ -842,9 +842,8 @@ bool list(window *win, list_widget *id, abcd::rect r, const std::vector<std::str
 	win->draw->set_font(t.font_family(), t.font_size());
 	float height = win->draw->get_font_height();
 
-
-	int view = int(0.5 + r.height() / float(height));
-	int doc = int(items.size());
+	int view = ceil(r.height() / float(height)); 
+	int doc = int(items.size())+1;
 	int vbar = r.height();
 	int nd, ns;
 	float ratio;
@@ -876,9 +875,22 @@ bool list(window *win, list_widget *id, abcd::rect r, const std::vector<std::str
 		}
 
 		thumb_rect = scr;
-		thumb_rect.y1 = int(0.5 + id->yvalue / ratio);
+		thumb_rect.y1 = int(id->yvalue / ratio);
 		thumb_rect.y2 = thumb_rect.y1 + thumb;
 	}
+
+	if (vbar_visible && id->scrolling)
+	{
+		int new_y1 = mouse.y - id->yref;
+		new_y1 = std::max(0, new_y1);
+		new_y1 = std::min(ns, new_y1);
+		id->yvalue = std::min(float(nd), new_y1 * ratio);
+		new_y1 = int(id->yvalue / ratio);
+		move(thumb_rect, thumb_rect.x1, new_y1);
+	}
+
+	int k = -ceil(id->yvalue);
+	int yoffset = k * height;
 
 	bool index_changed = false;
 
@@ -894,8 +906,9 @@ bool list(window *win, list_widget *id, abcd::rect r, const std::vector<std::str
 		}
 		else
 		{
-			int new_value = (int(id->yvalue) * height + mouse.y) / height;			
-			if (new_value != value)
+			int new_value = (-yoffset + mouse.y) / height;			
+
+			if ((new_value < doc -1) && new_value != value)
 			{
 				value = new_value;
 				index_changed = true;
@@ -908,15 +921,6 @@ bool list(window *win, list_widget *id, abcd::rect r, const std::vector<std::str
 		id->scrolling = false;
 	}
 
-	if (vbar_visible && id->scrolling)
-	{
-		int new_y1 = mouse.y - id->yref;
-		new_y1 = std::max(0, new_y1);
-		new_y1 = std::min(ns, new_y1);
-		id->yvalue = std::min(float(nd), new_y1 * ratio);
-		new_y1 = int(0.5 + int(id->yvalue) / ratio);
-		move(thumb_rect, thumb_rect.x1, new_y1);
-	}
 
 	if (vbar_visible)
 	{
@@ -933,7 +937,7 @@ bool list(window *win, list_widget *id, abcd::rect r, const std::vector<std::str
 	win->draw->push();
 	win->draw->clip(r);
 
-	int y = int(-id->yvalue) * height;
+	int y = yoffset;
 	for (int i = 0; i < (int)items.size(); ++i)
 	{
 		if (i != value)
